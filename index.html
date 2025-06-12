@@ -116,6 +116,36 @@
     .expanded-text {
       margin-top: 10px;
     }
+    .play-btn {
+      color: #00ffff;
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+    }
+    .streaming-options {
+      display: none;
+      background: rgba(0, 50, 80, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px solid #00ffff;
+    }
+    .streaming-options a {
+      display: block;
+      color: #00ffff;
+      text-decoration: none;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      background: rgba(0, 150, 200, 0.2);
+      transition: background 0.3s;
+    }
+    .streaming-options a:hover {
+      background: rgba(0, 150, 200, 0.5);
+    }
+    .show-options {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -128,12 +158,28 @@
   </div>
 
   <div class="tracklist">
-    <div class="track" id="darkTrack" onclick="expandTrack('dark')">
-      <span>1. DARK THOUGHTS</span>
+    <div class="track" id="darkTrack">
+      <div>
+        <span class="play-btn" onclick="toggleStreamingOptions('dark')">▶</span>
+        <span>1. DARK THOUGHTS</span>
+        <div class="streaming-options" id="darkOptions">
+          <strong>LISTEN:</strong>
+          <a href="https://open.spotify.com/intl-fr/album/7BnNV4WZAG7rFqUeMHRdUP" target="_blank">Spotify</a>
+          <a href="https://music.apple.com/us/album/dark-thoughts-single/1802035598" target="_blank">Apple Music</a>
+        </div>
+      </div>
       <span class="released">[Released - <span id="darkCount">0</span> streams]</span>
     </div>
-    <div class="track" id="owaTrack" onclick="expandTrack('owa')">
-      <span>2. OWA OWA</span>
+    <div class="track" id="owaTrack">
+      <div>
+        <span class="play-btn" onclick="toggleStreamingOptions('owa')">▶</span>
+        <span>2. OWA OWA</span>
+        <div class="streaming-options" id="owaOptions">
+          <strong>LISTEN:</strong>
+          <a href="https://open.spotify.com/intl-fr/album/4Yhp37rgKSp0FZwEdwW0S7" target="_blank">Spotify</a>
+          <a href="https://music.apple.com/ca/song/owa-owa/1817013340" target="_blank">Apple Music</a>
+        </div>
+      </div>
       <span class="released">[Released - <span id="owaCount">0</span> streams]</span>
     </div>
     <div class="track" onclick="alert('Lyrics coming soon!')">
@@ -204,6 +250,12 @@
       "https://i.ibb.co/BHqBzbJ7/f472b433758e5ad5895980ecaba83485-1000x1000x1.png"
     ];
 
+    function toggleStreamingOptions(track) {
+      event.stopPropagation(); // Prevent the track click from triggering
+      const options = document.getElementById(track + "Options");
+      options.classList.toggle("show-options");
+    }
+
     function shuffleCover() {
       coverIndex = (coverIndex + 1) % covers.length;
       const coverImg = document.getElementById("cover-img");
@@ -252,14 +304,57 @@
       }
     }, 1000);
 
+    // Close streaming options when clicking elsewhere
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.streaming-options') && !event.target.classList.contains('play-btn')) {
+        const allOptions = document.querySelectorAll('.streaming-options');
+        allOptions.forEach(option => {
+          option.classList.remove('show-options');
+        });
+      }
+    });
+
+    // Keep the expand track functionality
+    document.getElementById("darkTrack").addEventListener('click', function(event) {
+      if (!event.target.classList.contains('play-btn') && !event.target.closest('.streaming-options')) {
+        expandTrack('dark');
+      }
+    });
+
+    document.getElementById("owaTrack").addEventListener('click', function(event) {
+      if (!event.target.classList.contains('play-btn') && !event.target.closest('.streaming-options')) {
+        expandTrack('owa');
+      }
+    });
+
     function expandTrack(track) {
       const container = document.getElementById(track + "Track");
       container.classList.toggle("expanded");
 
       if (track === "dark") {
-        container.innerHTML = `<strong>1. DARK THOUGHTS</strong><br><span class="released">[Released - <span id="darkCount">${darkCount.toLocaleString()}</span> streams]</span><br><div class="expanded-text"><a href="https://genius.com/Lil-tecca-dark-thoughts-lyrics" target="_blank" style="color: #0ff; text-decoration: underline;">DARK THOUGHTS LYRICS</a></div>`;
+        container.innerHTML = `<div>
+          <span class="play-btn" onclick="toggleStreamingOptions('dark')">▶</span>
+          <strong>1. DARK THOUGHTS</strong>
+          <div class="streaming-options" id="darkOptions">
+            <strong>LISTEN:</strong>
+            <a href="https://open.spotify.com/intl-fr/album/7BnNV4WZAG7rFqUeMHRdUP" target="_blank">Spotify</a>
+            <a href="https://music.apple.com/us/album/dark-thoughts-single/1802035598" target="_blank">Apple Music</a>
+          </div>
+        </div>
+        <span class="released">[Released - <span id="darkCount">${darkCount.toLocaleString()}</span> streams]</span>
+        <div class="expanded-text"><a href="https://genius.com/Lil-tecca-dark-thoughts-lyrics" target="_blank" style="color: #0ff; text-decoration: underline;">DARK THOUGHTS LYRICS</a></div>`;
       } else if (track === "owa") {
-        container.innerHTML = `<strong>2. OWA OWA</strong><br><span class="released">[Released - <span id="owaCount">${owaCount.toLocaleString()}</span> streams]</span><br><div class="expanded-text"><a href="https://genius.com/Lil-tecca-owa-owa-lyrics" target="_blank" style="color: #0ff; text-decoration: underline;">OWA OWA LYRICS</a></div>`;
+        container.innerHTML = `<div>
+          <span class="play-btn" onclick="toggleStreamingOptions('owa')">▶</span>
+          <strong>2. OWA OWA</strong>
+          <div class="streaming-options" id="owaOptions">
+            <strong>LISTEN:</strong>
+            <a href="https://open.spotify.com/intl-fr/album/4Yhp37rgKSp0FZwEdwW0S7" target="_blank">Spotify</a>
+            <a href="https://music.apple.com/ca/song/owa-owa/1817013340" target="_blank">Apple Music</a>
+          </div>
+        </div>
+        <span class="released">[Released - <span id="owaCount">${owaCount.toLocaleString()}</span> streams]</span>
+        <div class="expanded-text"><a href="https://genius.com/Lil-tecca-owa-owa-lyrics" target="_blank" style="color: #0ff; text-decoration: underline;">OWA OWA LYRICS</a></div>`;
       }
     }
   </script>
